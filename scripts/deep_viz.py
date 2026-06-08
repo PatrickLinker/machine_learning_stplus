@@ -90,7 +90,8 @@ def preprocess_image(img, model, model_name):
 
 
 def show_feature_maps(model, img_array, layer_name):
-    intermediate_model = tf.keras.Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
+    _ = model(img_array)  # build the model so inputs/outputs are defined (Keras 3 Sequential needs this)
+    intermediate_model = tf.keras.Model(inputs=model.inputs, outputs=model.get_layer(layer_name).output)
     feature_maps = intermediate_model.predict(img_array)[0]
     n_maps = feature_maps.shape[-1]
     n_rows = min(8, n_maps)
