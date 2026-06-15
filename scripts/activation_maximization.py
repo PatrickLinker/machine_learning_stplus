@@ -43,13 +43,13 @@ def tf_clip_x(x):
 
 
 def generate(neuron_selection, iterations=40, randm=False):
-    model = VGG16(weights='imagenet')
     model_softmax = VGG16(weights='imagenet')
 
-    # Disable softmax in the original model
-    model.layers[-1].activation = None
-    model = tf.keras.models.clone_model(model)
-    model.set_weights(model_softmax.get_weights())
+    # Build a no-softmax variant by appending a new Dense (linear) on top of fc2
+    logit_layer = tf.keras.layers.Dense(1000, activation=None, name='logits')
+    logits = logit_layer(model_softmax.get_layer('fc2').output)
+    model = tf.keras.Model(inputs=model_softmax.input, outputs=logits)
+    model.get_layer('logits').set_weights(model_softmax.get_layer('predictions').get_weights())
 
     # Initial image
     if randm:
@@ -97,3 +97,5 @@ if __name__ == '__main__':
     # generate(278, randm=True) # kit fox
     # generate(9, randm=True) # ostrich
     generate(776, randm=True) # sax
+    # TODO: solve bug
+    # TODO: use image as input if path specified
