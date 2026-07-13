@@ -1,0 +1,46 @@
+import torch
+import torch.nn as nn
+
+class SubsetSumDeepSets(nn.Module):
+    def __init__(self, input_dim=2, latent_dim=64, hidden_dim=128):
+        super(SubsetSumDeepSets, self).__init__()
+        
+        # 1. Die Phi-Funktion: Transformiert jedes Paar [S_i, T] isoliert
+        self.phi = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, latent_dim),
+            nn.ReLU()
+        )
+        
+        # 2. Die Rho-Funktion: Berechnet die Wahrscheinlichkeit aus der Summe
+        self.rho = nn.Sequential(
+            nn.Linear(latent_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 1),
+            nn.Sigmoid() # Ausgabe p im Intervall [0, 1]
+        )
+
+    def forward(self, S, T):
+        # S: (Batch_Size, max_elements)
+        # T: (Batch_Size, 1)
+        batch_size, num_elements = S.shape
+        
+        # Feature Engineering im Tensor: Verknüpfe jedes S_i mit T
+        T_expanded = T.unsqueeze(1).repeat(1, num_elements, 1) # (Batch, Elemente, 1)
+        S_expanded = S.unsqueeze(-1) # (Batch, Elemente, 1)
+        
+        # Kombiniere zu Paaren [S_i, T]
+        x = torch.cat([S_expanded, T_expanded], dim=-1) # (Batch, Elemente, 2)
+        
+        # Flachklopfen für die lineare Schicht in Phi
+        x_flat = x.view(-1, 2)
+        x_transformed = self.phi(x_flat)
+        x_transformed = x_transformed.view(batch_size, num_elements, -1)
+        
+        # Aggregationsschritt: Summation über alle Elemente (erzwingt Permutationsinvarianz)
+        summed_features = torch.sum(x_transformed, dim=1) # (Batch, latent_dim)
+        
+        # Vorhersage über Rho
+        p = self.rho(summed_features)
+        return p
