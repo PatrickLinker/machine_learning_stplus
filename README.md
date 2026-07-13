@@ -1,70 +1,41 @@
-# Machine Learning Lecture Repository
+Projektstruktur:
+Das Projekt ist modular aufgebaut, um Wartbarkeit und Reproduzierbarkeit zu gewährleisten: 
+data/: Binäre .npy-Datensätze für schnelles Training. 
+models/: Gespeicherte Gewichte des trainierten Modells (.pth).
+src/: Der Quellcode:dataset.py: Generator für synthetische Probleminstanzen (inkl. exaktem DP-Solver).
+model.py: Architekturdefinition von $\phi$ und $\rho$.
+train.py: Trainings-Pipeline.predict.py: Anwendungsskript für Vorhersagen.
+explain.py: Saliency-Analyse (XAI).explain_whatif.py: Kontrafaktische „Was-wäre-wenn“-Analyse.
+manage.py: Zentrales Steuerungs-Skript für alle Operationen.
 
-Welcome to the repository accompanying the **Machine Learning** lectures. This repository contains scripts and datasets discussed throughout the course.
+Voraussetzungen:
 
-## 📁 Structure
+-Python 3.8+
 
-- `data/` – Sample datasets (or download scripts)
-- `plots/` – Directory where plots will be saved
-- `scripts/` – Python scripts for demonstrations or assignments
-- `requirements.txt` – List of required Python packages
+-PyTorch
 
-## ⚙️ Setup Instructions
+-NumPy
 
-You can set up your environment using either `venv` (standard Python virtual environments) or `conda/miniconda`. Choose one of the following:
-
----
+-tqdm
 
 
-### 🐍 Option 1: Using `venv` (Python 3.10 recommended)
+Installieren Sie Abhängigkeiten mit
 
-1. **Create virtual environment**:
-   ```bash
-   python3 -m venv ml-env
-   ```
+pip install -r requirements.txt
 
-2. **Activate the environment**:
-   - On macOS/Linux:
-     ```bash
-     source ml-env/bin/activate
-     ```
-   - On Windows:
-     ```bash
-     .\ml-env\Scripts\activate
-     ```
+Datensätze können anschließend generiert werden über
 
-3. **Install requirements**:
-   ```bash
-   pip3 install --upgrade pip
-   pip3 install -r requirements.txt
-   ```
-   
----
+python manage.py generate_data
 
-### 🧪 Option 2: Using `conda` / `miniconda`
+Das Modell kann trainiert werden über
 
-1. **Create a new conda environment**:
-   ```bash
-   conda create -n ml-env python=3.10
-   ```
+python manage.py train --epochs 20
 
-2. **Activate the environment**:
-   ```bash
-   conda activate ml-env
-   ```
+Nach Training könne Vorhersagen getroffen werden über:
 
-3. **Install requirements**:
-   ```bash
-   pip3 install -r requirements.txt
-   ```
+python src/predict.py
 
-## 📝 Notes
+Die Explainable-AI-Funktionen können wie folgt aufgerufen werden:
 
-- This repository assumes basic familiarity with Python and Shell comands.
-- GPU acceleration is not required but may speed up certain examples if available (you can use https://colab.google/ for that purpose).
-
----
-
-## 📚 License
-
-This repository is intended for educational purposes. Content is provided under the [MIT License](LICENSE) unless otherwise noted.
+# Kontrafaktische Analyse (What-If)
+python src/explain_whatif.py

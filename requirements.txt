@@ -1,14 +1,9 @@
-numpy
-pandas
-matplotlib
-scikit-learn
-scikit-multilearn
-tensorflow
-streamlit
-protobuf
-opencv-python
-openpyxl
-fg-data-profiling
-lime
-neurokit2
-ultralytics
+# Core Machine Learning Framework
+torch==2.2.1
+bytecode==0.15.1
+
+# Datenverarbeitung und mathematische Hilfsfunktionen
+numpy==1.26.4
+
+# Fortschrittsanzeige für das Training (optional, aber sehr professionell)
+tqdm==4.66.2

@@ -1,1 +1,0 @@
-wget https://userpage.fu-berlin.de/soga/data/raw-data/DWD.csv
